@@ -249,6 +249,7 @@ function agariomodsRuntimePatches() {
         gamejs_patch("this."+pandb+"&&b.strokeText("+c3eg2+");b.fillText("+c3eg2+")", "if (String(c).substring(0, 2) != \"i/\" || custom) {this."+pandb+"&&b.strokeText("+c3eg2+");b.fillText("+c3eg2+")}", "add custom skins check for hiding username when using imgur id aka c3eg2");
         gamejs_patch(b+"=this.name.toLowerCase();", b+"=this.name.toLowerCase(); if (("+b+".substring(0, 2) == \"i/\"||"+b+".substring(0, 1) == \"*\")&&!custom&&"+Ja+".indexOf("+b+")==-1) {" +Ja+ ".push("+b+")} ;", "add imgur check #2.");
     gamejs = addKeyboardHook(gamejs);
+    gamejs = addChatCSSHook(gamejs);
     gamejs = addChartHooks(gamejs);
     gamejs = addOnCellEatenHook(gamejs);
 	gamejs = addTeamMassHook(gamejs);
@@ -419,6 +420,12 @@ function addKeyboardHook(script) {
     var match = script.match(/onkeydown=function\(d\){/);
     var split = script.split(match[0]);
     return split[0] + match[0] + ' if(isVisible()) return;' + split[1];
+}
+
+function addChatCSSHook(script) {
+    var match = script.match(/f.clearRect\(0,0,q,r\);/);
+    var split = script.split(match[0]);
+    return split[0] + match[0] + 'chatCSS(la);' + split[1];
 }
 
 function addChartHooks(script) {
@@ -1438,6 +1445,23 @@ window.connectPrivate = function(location, i) {
 	connect("ws://"+ ip + ":" + port, "");
 	var apikey = jQuery('#apikey').val().replace(" ", "");
 	openChat();
+}
+
+var currentTheme = false;
+function chatCSS(newstyle) {
+	if(currentTheme != newstyle) {
+		currentTheme = newstyle;
+		if(newstyle) {
+			$('#chatlines').css("color", "#ccc");
+			$('#chatlines').css("background-color", "rgba(255,255,255,0.1)");
+			$('#chatlines').css("box-shadow", "0px 0px 10px #aaa");
+		}
+		else {
+			$('#chatlines').css("color", "#333");
+			$('#chatlines').css("background-color", "rgba(0,0,0,0.2)");
+			$('#chatlines').css("box-shadow", "0px 0px 10px #111");
+		}
+	}
 }
 
 function openChat(){
